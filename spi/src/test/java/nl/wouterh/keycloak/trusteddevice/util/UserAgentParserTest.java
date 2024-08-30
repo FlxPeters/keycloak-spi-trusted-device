@@ -32,5 +32,5 @@ public class UserAgentParserTest {
 
         // Verify the result
         assertEquals("Chrome on Windows", deviceName);
-    } 
+    }
 }

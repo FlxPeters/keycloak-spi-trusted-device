@@ -54,7 +54,6 @@ public class CredentialConfiguredConditionFactory implements
     return "Flow is only executed if device is trusted.";
   }
 
-
   @Override
   public List<ProviderConfigProperty> getConfigProperties() {
     ProviderConfigProperty authTypes = new ProviderConfigProperty();

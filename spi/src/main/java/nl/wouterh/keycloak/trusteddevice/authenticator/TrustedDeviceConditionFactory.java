@@ -59,7 +59,6 @@ public class TrustedDeviceConditionFactory implements
     return "Flow is only executed if device is trusted.";
   }
 
-
   @Override
   public List<ProviderConfigProperty> getConfigProperties() {
     ProviderConfigProperty negateOutput = new ProviderConfigProperty();
@@ -72,7 +71,6 @@ public class TrustedDeviceConditionFactory implements
 
     return Arrays.asList(negateOutput);
   }
-
 
   @Override
   public void init(Config.Scope config) {
