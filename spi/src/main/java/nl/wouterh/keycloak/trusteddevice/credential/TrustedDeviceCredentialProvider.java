@@ -3,6 +3,7 @@ package nl.wouterh.keycloak.trusteddevice.credential;
 import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
+
 import org.keycloak.common.util.Time;
 import org.keycloak.credential.CredentialModel;
 import org.keycloak.credential.CredentialProvider;
@@ -26,14 +27,17 @@ public class TrustedDeviceCredentialProvider implements
     return TrustedDeviceCredentialModel.TYPE_TWOFACTOR;
   }
 
-  public List<TrustedDeviceCredentialModel> removeExpiredCredentials(RealmModel realm,
+  // Get all active credentials for a user
+  public List<TrustedDeviceCredentialModel> getActiveCredentials(RealmModel realm,
       UserModel user) {
-    // Remove all other expired credentials
+
+    // Get all current credentials of the user
     List<TrustedDeviceCredentialModel> credentials = user.credentialManager()
         .getStoredCredentialsByTypeStream(TrustedDeviceCredentialModel.TYPE_TWOFACTOR)
         .map(TrustedDeviceCredentialModel::createFromCredentialModel)
         .collect(Collectors.toList());
 
+    // Remove outdated credentials
     long now = Time.currentTime();
     Iterator<TrustedDeviceCredentialModel> it = credentials.iterator();
     while (it.hasNext()) {
@@ -49,7 +53,10 @@ public class TrustedDeviceCredentialProvider implements
 
   public TrustedDeviceCredentialModel getActiveCredentialById(RealmModel realm, UserModel user,
       String id) {
-    List<TrustedDeviceCredentialModel> credentials = removeExpiredCredentials(realm, user);
+    // Remove outdated credentials
+    List<TrustedDeviceCredentialModel> credentials = getActiveCredentials(realm, user);
+
+    // Find the credential
     for (TrustedDeviceCredentialModel credential : credentials) {
       if (id.equals(credential.getId())) {
         return credential;
@@ -60,8 +67,8 @@ public class TrustedDeviceCredentialProvider implements
   }
 
   @Override
-  public CredentialModel createCredential(RealmModel realm, UserModel user,
-      TrustedDeviceCredentialModel credentialModel) {
+  public CredentialModel createCredential(
+      RealmModel realm, UserModel user, TrustedDeviceCredentialModel credentialModel) {
     if (credentialModel.getCreatedDate() == null) {
       credentialModel.setCreatedDate(Time.currentTimeMillis());
     }
